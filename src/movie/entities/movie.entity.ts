@@ -1,25 +1,87 @@
+import { ActorEntity } from 'src/actor/entities/actor.entity';
+import { ReviewEntity } from 'src/review/entities/review.entity';
+import { MoviePosterEntity } from './poster.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
+
+export enum Genre {
+  ACTION = 'action',
+  COMEDY = 'comedy',
+  DRAMA = 'drama',
+  HORROR = 'horro',
+}
 
 @Entity({ name: 'movies' })
 export class MovieEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
+  @Column({
+    type: 'text',
+  })
   title: string;
 
-  @Column()
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  description: string;
+
+  @Column({
+    type: 'decimal',
+    precision: 3,
+    scale: 1,
+    default: 0.0,
+  })
+  rating: number;
+
+  @Column({ name: 'relase_year', type: 'int', unsigned: true })
   relaseYear: number;
 
-  @CreateDateColumn()
+  @Column({ name: 'is_availabe', type: 'boolean', default: true })
+  isAvailable: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: Genre,
+    default: Genre.DRAMA,
+  })
+  genre: Genre;
+
+  @Column({ name: 'poster_id', type: 'uuid', nullable: true })
+  posterId: string;
+
+  @OneToOne(() => MoviePosterEntity, (poster) => poster.movie, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'poster_id' })
+  poster: MoviePosterEntity | null;
+
+  @OneToMany(() => ReviewEntity, (review) => review.movie)
+  reviews: ReviewEntity[];
+
+  @ManyToMany(() => ActorEntity, (actor) => actor.movies)
+  @JoinTable({
+    name: 'movie_actors',
+    joinColumn: { name: 'movie_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'actor_id', referencedColumnName: 'id' },
+  })
+  actors: ActorEntity[];
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
