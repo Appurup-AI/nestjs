@@ -1,15 +1,17 @@
 import {
-  Get,
-  Post,
   Controller,
   Body,
+  Get,
+  Post,
   Param,
   Put,
   Delete,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
-import { MovieDto } from './dto/movie.dto';
 
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('Movie')
 @Controller('movies')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
@@ -25,12 +27,12 @@ export class MovieController {
   }
 
   @Post()
-  create(@Body() dto: MovieDto) {
+  create(@Body() dto: any) {
     return this.movieService.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: MovieDto) {
+  update(@Param('id') id: string, @Body() dto: any) {
     return this.movieService.update(id, dto);
   }
 
