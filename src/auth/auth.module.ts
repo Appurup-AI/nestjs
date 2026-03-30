@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 
 @Module({
+  imports: [JwtModule.registerAsync({})]
   controllers: [AuthController],
   providers: [AuthService],
 })
